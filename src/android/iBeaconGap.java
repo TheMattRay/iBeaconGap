@@ -26,7 +26,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.RemoteException;
 
-public abstract class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
+public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
 
     protected static final String TAG = "iBeaconGap";
 //    private CallbackContext startupCallbackContext;
@@ -120,20 +120,17 @@ public abstract class iBeaconGap extends CordovaPlugin implements IBeaconConsume
         return object;
     }
 
-//  @Override
-//  public boolean bindService(Intent arg0, ServiceConnection arg1, int arg2) {
-//      // TODO Auto-generated method stub
-//      return false;
-//  }
-//
-//  @Override
-//  public Context getApplicationContext() {
-//      return appContext;
-//  }
-//
-//  @Override
-//  public void unbindService(ServiceConnection arg0) {
-//      // TODO Auto-generated method stub
-//      
-//  }
+    @Override
+    public boolean bindService(Intent arg0, ServiceConnection arg1, int arg2) {
+        return true;
+    }
+
+    @Override
+    public Context getApplicationContext() {
+     return appContext;
+    }
+
+    @Override
+    public void unbindService(ServiceConnection arg0) {
+    }
 }
