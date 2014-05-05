@@ -21,25 +21,27 @@ import com.radiusnetworks.ibeacon.RangeNotifier;
 
 //import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
+//import android.content.Intent;
+//import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.RemoteException;
 
-public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
+public abstract class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
 
     protected static final String TAG = "iBeaconGap";
-    private CallbackContext startupCallbackContext;
+//    private CallbackContext startupCallbackContext;
     private CallbackContext callbackContext;
     private IBeaconManager iBeaconManager;
+    
+    private Context appContext;
 
     private ArrayList<IBeacon> myBeacons = new ArrayList<IBeacon>();
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
-
-        iBeaconManager = IBeaconManager.getInstanceForApplication(this.cordova.getActivity().getApplicationContext());
+        appContext = this.cordova.getActivity().getApplicationContext();
+        iBeaconManager = IBeaconManager.getInstanceForApplication(appContext);
 
         iBeaconManager.bind(this);
 
@@ -116,25 +118,20 @@ public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
         return object;
     }
 
-    @Override
-    public boolean bindService(Intent arg0, ServiceConnection arg1, int arg2) {
-        // TODO Auto-generated method stub
-        Log.d(TAG, "IBG: bindService");
-        return super.bindService(arg0, arg1, arg2);
-    }
-
-    @Override
-    public Context getApplicationContext() {
-        // TODO Auto-generated method stub
-        Log.d(TAG, "IBG: getapplicationContext");
-        return super.getApplicationContext();
-    }
-
-    @Override
-    public void unbindService(ServiceConnection arg0) {
-        // TODO Auto-generated method stub
-        super.unbindService(arg0);
-        Log.d(TAG, "IBG: unbindService");
-    }
-
+//  @Override
+//  public boolean bindService(Intent arg0, ServiceConnection arg1, int arg2) {
+//      // TODO Auto-generated method stub
+//      return false;
+//  }
+//
+//  @Override
+//  public Context getApplicationContext() {
+//      return appContext;
+//  }
+//
+//  @Override
+//  public void unbindService(ServiceConnection arg0) {
+//      // TODO Auto-generated method stub
+//      
+//  }
 }
