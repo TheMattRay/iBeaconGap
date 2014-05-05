@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import android.util.Log;
 
 import com.radiusnetworks.ibeacon.IBeacon;
 import com.radiusnetworks.ibeacon.IBeaconConsumer;
@@ -27,7 +28,7 @@ import android.os.RemoteException;
 
 public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
 
-    protected static final String TAG = "RangingActivity";
+    protected static final String TAG = "iBeaconGap";
     private CallbackContext startupCallbackContext;
     private CallbackContext callbackContext;
     private IBeaconManager iBeaconManager;
@@ -41,6 +42,8 @@ public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
         iBeaconManager = IBeaconManager.getInstanceForApplication(this.cordova.getActivity().getApplicationContext());
 
         iBeaconManager.bind(this);
+
+        Log.d(TAG, "IBG: Done binding.");
     }
 
     @Override
@@ -51,6 +54,7 @@ public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
             // String message = args.getString(0);
             // this.getBeacons(callbackContext);
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, listToJSONArray(myBeacons)));
+            Log.d(TAG, "IBG: getBeacons.");
             return true;
         }
         return false;
@@ -80,6 +84,7 @@ public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
                 myBeacons.clear();
                 // if (iBeacons.size() > 0) {
                 myBeacons.addAll(iBeacons);
+                Log.d(TAG, "IBG: didRangeBeaconsInRegion");
                     // EditText editText = (EditText)RangingActivity.this.findViewById(R.id.rangingText);
                     // logToDisplay("The first iBeacon I see is about "+iBeacons.iterator().next().getAccuracy()+" meters away.");             
                 // }
@@ -114,19 +119,22 @@ public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
     @Override
     public boolean bindService(Intent arg0, ServiceConnection arg1, int arg2) {
         // TODO Auto-generated method stub
-        return false;
+        Log.d(TAG, "IBG: bindService");
+        return super.bindService(arg0, arg1, arg2);
     }
 
     @Override
     public Context getApplicationContext() {
         // TODO Auto-generated method stub
-        return null;
+        Log.d(TAG, "IBG: getapplicationContext");
+        return super.getApplicationContext();
     }
 
     @Override
     public void unbindService(ServiceConnection arg0) {
         // TODO Auto-generated method stub
-        
+        super.unbindService(arg0);
+        Log.d(TAG, "IBG: unbindService");
     }
 
 }
