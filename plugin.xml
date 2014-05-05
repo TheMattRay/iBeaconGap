@@ -12,10 +12,13 @@
 		</config-file>
 		<config-file parent="/*" target="AndroidManifest.xml">
 			<service android:enabled="true" android:exported="true" android:isolatedProcess="false" android:label="iBeacon" android:name="com.radiusnetworks.ibeacon.service.IBeaconService"/>
-			<service android:enabled="true" android:name="com.radiusnetworks.ibeacon.IBeaconIntentProcessor"/>
+			<service android:exported="false" android:enabled="true" android:name="com.radiusnetworks.ibeacon.IBeaconIntentProcessor"/>
             <uses-permission android:name="android.permission.BLUETOOTH" />
             <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 		</config-file>
+		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <service android:exported="false" android:name="com.radiusnetworks.ibeacon.IBeaconIntentProcessor"/>
+        </config-file>
 		<source-file src="libs/androidibeaconlibrary.jar" target-dir="libs" />
 		<source-file src="src/android/iBeaconGap.java" target-dir="src/com/thinketg/plugin/ibeacongap/iBeaconGap" />
 	</platform>
