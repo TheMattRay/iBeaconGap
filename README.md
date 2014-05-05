@@ -10,7 +10,7 @@ Phonegap/Cordova plugin wrapper for Android SDK (https://github.com/RadiusNetwor
 
 Usage
 ==
-
+```
   iBeaconGap.getBeacons(gotBeacons, failedGettingBeacons);
   
   function gotBeacons(beacons) {
@@ -19,3 +19,8 @@ Usage
       
     }
   }
+  
+  function failedGettingBeacon(err) {
+    console.log(err);
+  }
+```
