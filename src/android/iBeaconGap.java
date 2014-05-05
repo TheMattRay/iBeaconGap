@@ -95,7 +95,9 @@ public abstract class iBeaconGap extends CordovaPlugin implements IBeaconConsume
 
         try {
             iBeaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-        } catch (RemoteException e) {   }
+        } catch (RemoteException e) {
+            Log.d(TAG, e.toString());
+        }
     }
 
     private JSONArray listToJSONArray(Collection<IBeacon> beacons) throws JSONException{
