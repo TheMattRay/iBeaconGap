@@ -1,12 +1,15 @@
 package com.thinketg.plugin.ibeacongap;
 
+import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
-
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import com.radiusnetworks.ibeacon.IBeacon;
@@ -15,16 +18,13 @@ import com.radiusnetworks.ibeacon.IBeaconManager;
 import com.radiusnetworks.ibeacon.Region;
 import com.radiusnetworks.ibeacon.RangeNotifier;
 
-import android.app.Activity;
-
+//import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.util.Log;
-import android.widget.EditText;
 
-/**
- * This class echoes a string called from JavaScript.
- */
 public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
 
     protected static final String TAG = "RangingActivity";
@@ -32,7 +32,7 @@ public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
     private CallbackContext callbackContext;
     private IBeaconManager iBeaconManager;
 
-    private Collection<IBeacon> myBeacons = new Collection<IBeacon>();
+    private ArrayList<IBeacon> myBeacons = new ArrayList<IBeacon>();
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
@@ -56,26 +56,19 @@ public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
         return false;
     }
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         // iBeaconManager.bind(this);
     }
-    @Override 
-    protected void onDestroy() {
-        super.onDestroy();
+
+    public void onDestroy() {        
         iBeaconManager.unBind(this);
     }
 
-    @Override 
     protected void onPause() {
-        super.onPause();
         if (iBeaconManager.isBound(this)) iBeaconManager.setBackgroundMode(this, true);         
     }
 
-    @Override 
     protected void onResume() {
-        super.onResume();
         if (iBeaconManager.isBound(this)) iBeaconManager.setBackgroundMode(this, false);            
     }
 
@@ -98,21 +91,42 @@ public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
         } catch (RemoteException e) {   }
     }
 
-    private JSONArray listToJSONArray(Collection<Beacon> beacons) throws JSONException{
+    private JSONArray listToJSONArray(Collection<IBeacon> beacons) throws JSONException{
         JSONArray jArray = new JSONArray();
-        for (Beacon beacon : beacons) {
+        for (IBeacon beacon : beacons) {
             jArray.put(beaconToJSONObject(beacon));
         }
         return jArray;
     }
 
-    // private void logToDisplay(final String line) {
-    //     runOnUiThread(new Runnable() {
-    //         public void run() {
-    //             EditText editText = (EditText)RangingActivity.this
-    //                     .findViewById(R.id.rangingText);
-    //             editText.append(line+"\n");             
-    //         }
-    //     });
-    // }
+    private JSONObject beaconToJSONObject(IBeacon beacon) throws JSONException{
+        JSONObject object = new JSONObject();        
+        object.put("proximityUUID", beacon.getProximityUuid());
+        object.put("major", beacon.getMajor());
+        object.put("minor", beacon.getMinor());
+        object.put("rssi", beacon.getRssi());
+        object.put("macAddress", beacon.getBluetoothAddress());
+        object.put("measuredPower", beacon.getTxPower());
+        object.put("distance", beacon.getAccuracy());
+        return object;
+    }
+
+    @Override
+    public boolean bindService(Intent arg0, ServiceConnection arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public Context getApplicationContext() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void unbindService(ServiceConnection arg0) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }
