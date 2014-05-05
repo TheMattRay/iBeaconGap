@@ -11,41 +11,105 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
 import android.util.Log;
 
-import com.radiusnetworks.ibeacon.IBeacon;
-import com.radiusnetworks.ibeacon.IBeaconConsumer;
-import com.radiusnetworks.ibeacon.IBeaconManager;
-import com.radiusnetworks.ibeacon.Region;
-import com.radiusnetworks.ibeacon.RangeNotifier;
+import com.radiusnetworks.ibeacon.*;
+import com.radiusnetworks.ibeacon.service.*;
 
-//import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 //import android.content.Intent;
 //import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Messenger;
 import android.os.RemoteException;
 
-public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
+public class iBeaconGap extends CordovaPlugin {
 
     protected static final String TAG = "iBeaconGap";
 //    private CallbackContext startupCallbackContext;
     private CallbackContext callbackContext;
-    private IBeaconManager iBeaconManager;
     
+//    private RadiusReference myRadius;
     private Context appContext;
-
+    
+    private IBeaconManager ibm;
+//    private Context appContext;
+    
+    private IBeaconService ibs;
+    
     private ArrayList<IBeacon> myBeacons = new ArrayList<IBeacon>();
+    
+    private IBeaconConsumer myConsumer;
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         appContext = this.cordova.getActivity().getApplicationContext();
-        iBeaconManager = IBeaconManager.getInstanceForApplication(appContext);
+        
+        ibm = IBeaconManager.getInstanceForApplication(appContext);
+        
+        ibs = new IBeaconService();
+        
+        IBeaconManager.LOG_DEBUG = true;
+        
+        Log.d(TAG, "Availability:" + ibm.checkAvailability());
+        
+        ibm.setForegroundScanPeriod(2000);
+        ibm.setForegroundBetweenScanPeriod(2000);
+        
+        ibm.setRangeNotifier(new RangeNotifier(){
+            @Override
+            public void didRangeBeaconsInRegion(Collection<IBeacon> beacons, Region region) {
+                myBeacons.clear();
+                myBeacons.addAll(beacons);
+                Log.d(TAG, "didRangeBeaconsInRegion");
+            }
+        });
+        
+        myConsumer = new IBeaconConsumer() {
+            @Override
+            public boolean bindService(Intent arg0, ServiceConnection arg1, int arg2) {
+                // TODO Auto-generated method stub
+                ibs.bindService(arg0, arg1, arg2);
+                return true;
+            }
 
-        iBeaconManager.bind(this);
+            @Override
+            public Context getApplicationContext() {
+                // TODO Auto-generated method stub
+                return appContext;
+            }
 
-        Log.d(TAG, "IBG: Done binding.");
+            @Override
+            public void onIBeaconServiceConnect() {
+                // TODO Auto-generated method stub
+                try {
+                    ibm.startRangingBeaconsInRegion(new Region("etg001", null, null, null));
+                } catch (RemoteException e) {   
+                    Log.d(TAG, e.getMessage());
+                }
+            }
+
+            @Override
+            public void unbindService(ServiceConnection arg0) {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        
+        ibm.bind(myConsumer);
+        
+        try {
+            ibm.startRangingBeaconsInRegion(new Region("etg001", null, null, null));
+        } catch (RemoteException e) {   
+            Log.d(TAG, e.getMessage());
+        }
+        
+        Log.d(TAG, "IBG: initializing.");
     }
 
     @Override
@@ -66,40 +130,6 @@ public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
         // iBeaconManager.bind(this);
     }
 
-    public void onDestroy() {        
-        iBeaconManager.unBind(this);
-    }
-
-    protected void onPause() {
-        if (iBeaconManager.isBound(this)) iBeaconManager.setBackgroundMode(this, true);         
-    }
-
-    protected void onResume() {
-        if (iBeaconManager.isBound(this)) iBeaconManager.setBackgroundMode(this, false);            
-    }
-
-    @Override
-    public void onIBeaconServiceConnect() {
-        iBeaconManager.setRangeNotifier(new RangeNotifier() {
-            @Override 
-            public void didRangeBeaconsInRegion(Collection<IBeacon> iBeacons, Region region) {
-                myBeacons.clear();
-                // if (iBeacons.size() > 0) {
-                myBeacons.addAll(iBeacons);
-                Log.d(TAG, "IBG: didRangeBeaconsInRegion");
-                    // EditText editText = (EditText)RangingActivity.this.findViewById(R.id.rangingText);
-                    // logToDisplay("The first iBeacon I see is about "+iBeacons.iterator().next().getAccuracy()+" meters away.");             
-                // }
-            }
-        });
-
-        try {
-            iBeaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-        } catch (RemoteException e) {
-            Log.d(TAG, e.toString());
-        }
-    }
-
     private JSONArray listToJSONArray(Collection<IBeacon> beacons) throws JSONException{
         JSONArray jArray = new JSONArray();
         for (IBeacon beacon : beacons) {
@@ -118,19 +148,5 @@ public class iBeaconGap extends CordovaPlugin implements IBeaconConsumer {
         object.put("measuredPower", beacon.getTxPower());
         object.put("distance", beacon.getAccuracy());
         return object;
-    }
-
-    @Override
-    public boolean bindService(Intent arg0, ServiceConnection arg1, int arg2) {
-        return true;
-    }
-
-    @Override
-    public Context getApplicationContext() {
-     return appContext;
-    }
-
-    @Override
-    public void unbindService(ServiceConnection arg0) {
     }
 }
