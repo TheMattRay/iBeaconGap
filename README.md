@@ -24,3 +24,10 @@ Usage
     console.log(err);
   }
 ```
+
+Methods
+==
+
+- `iBeaconGap.startScanning() ` Either begins scanning or resumes scanning (if you were scanning before)
+- `iBeaconGap.stopScanning() ` Stops scanning for iBeacons
+- `iBeaconGap.getBeacons(win, fail) ` Returns current array of iBeacons to the 'win' callback
