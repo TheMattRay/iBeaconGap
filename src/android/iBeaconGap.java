@@ -45,11 +45,14 @@ public class iBeaconGap extends CordovaPlugin {
         this.callbackContext = callbackContext;
 
         if (action.equalsIgnoreCase("getBeacons")) {
-            // String message = args.getString(0);
-            // this.getBeacons(callbackContext);
-            
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, listToJSONArray(myUtil.myBeacons)));
             Log.d(TAG, "IBG: getBeacons.");
+            return true;
+        }
+        else if (action.equalsIgnoreCase("stopScanning")) {
+            this.myUtil.stopScanning();
+            callbackContext.success();
+            Log.d(TAG, "IBG: stopScanning.");
             return true;
         }
         return false;

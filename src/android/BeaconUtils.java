@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+
 import android.os.RemoteException;
 
 
@@ -29,8 +30,17 @@ public class BeaconUtils implements IBeaconConsumer, RangeNotifier, IBeaconDataN
     protected static final String TAG = "BeaconUtils";
     
     private Activity myActivity;
+    private Region currentRegion;
     
     public ArrayList<IBeacon> myBeacons = new ArrayList<IBeacon>();
+    
+    public void stopScanning() {
+        try {
+            this.iBeaconManager.stopRangingBeaconsInRegion(currentRegion);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 
     public BeaconUtils(Context context) {
         this.context = context;
@@ -38,6 +48,7 @@ public class BeaconUtils implements IBeaconConsumer, RangeNotifier, IBeaconDataN
         
         this.iBeaconManager = IBeaconManager.getInstanceForApplication(this.myActivity.getApplicationContext());
         this.iBeaconManager.bind(this);
+        
 //        verifyBluetooth((Activity) context);
     }
 
@@ -80,11 +91,11 @@ public class BeaconUtils implements IBeaconConsumer, RangeNotifier, IBeaconDataN
 
     @Override
     public void onIBeaconServiceConnect() {
-        Region region = new Region("MainActivityRanging", null, null, null);
+        currentRegion = new Region("MainActivityRanging", null, null, null);
         try {
 //            this.iBeaconManager.startMonitoringBeaconsInRegion(region);
             this.iBeaconManager.setRangeNotifier(this);
-            this.iBeaconManager.startRangingBeaconsInRegion(region);
+            this.iBeaconManager.startRangingBeaconsInRegion(currentRegion);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
