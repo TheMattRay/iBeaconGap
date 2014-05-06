@@ -19,11 +19,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-//import android.content.Intent;
-//import android.content.ServiceConnection;
-//import android.os.Bundle;
-//import android.os.Handler;
-//import android.os.Messenger;
 import android.os.RemoteException;
 
 
@@ -33,12 +28,15 @@ public class BeaconUtils implements IBeaconConsumer, RangeNotifier, IBeaconDataN
     private IBeaconManager iBeaconManager;
     protected static final String TAG = "BeaconUtils";
     
+    private Activity myActivity;
+    
     public ArrayList<IBeacon> myBeacons = new ArrayList<IBeacon>();
 
     public BeaconUtils(Context context) {
         this.context = context;
+        this.myActivity = (Activity)this.context;
         
-        this.iBeaconManager = IBeaconManager.getInstanceForApplication(((Activity)this.context).getApplicationContext());
+        this.iBeaconManager = IBeaconManager.getInstanceForApplication(this.myActivity.getApplicationContext());
         this.iBeaconManager.bind(this);
 //        verifyBluetooth((Activity) context);
     }

@@ -32,7 +32,11 @@ public class iBeaconGap extends CordovaPlugin {
         super.initialize(cordova, webView);
         appActivity = this.cordova.getActivity();
         appContext = appActivity.getApplicationContext();
-        myUtil = new BeaconUtils(appActivity);
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {               
+                myUtil = new BeaconUtils(appActivity);
+            }
+        });
         
     }
 
@@ -43,6 +47,7 @@ public class iBeaconGap extends CordovaPlugin {
         if (action.equalsIgnoreCase("getBeacons")) {
             // String message = args.getString(0);
             // this.getBeacons(callbackContext);
+            
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, listToJSONArray(myUtil.myBeacons)));
             Log.d(TAG, "IBG: getBeacons.");
             return true;
