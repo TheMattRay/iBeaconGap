@@ -42,6 +42,14 @@ public class BeaconUtils implements IBeaconConsumer, RangeNotifier, IBeaconDataN
         }
     }
 
+    public void startScanning() {
+        try {
+            this.iBeaconManager.startRangingBeaconsInRegion(currentRegion);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     public BeaconUtils(Context context) {
         this.context = context;
         this.myActivity = (Activity)this.context;

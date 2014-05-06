@@ -9,3 +9,9 @@ exports.stopScanning = function() {
 	var error = function(){};
     exec(success, error, "iBeaconGap", "stopScanning", []);
 };
+
+exports.startScanning = function() {
+	var success = function(){};
+	var error = function(){};
+    exec(success, error, "iBeaconGap", "startScanning", []);
+};

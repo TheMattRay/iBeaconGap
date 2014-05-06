@@ -55,6 +55,12 @@ public class iBeaconGap extends CordovaPlugin {
             Log.d(TAG, "IBG: stopScanning.");
             return true;
         }
+        else if (action.equalsIgnoreCase("startScanning")) {
+            this.myUtil.startScanning();
+            callbackContext.success();
+            Log.d(TAG, "IBG: startScanning.");
+            return true;
+        }
         return false;
     }
     
