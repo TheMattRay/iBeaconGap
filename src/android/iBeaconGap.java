@@ -16,6 +16,7 @@ import android.util.Log;
 
 import com.radiusnetworks.ibeacon.*;
 
+import android.app.Activity;
 import android.content.Context;
 
 public class iBeaconGap extends CordovaPlugin {
@@ -23,13 +24,15 @@ public class iBeaconGap extends CordovaPlugin {
     protected static final String TAG = "iBeaconGap";
     private CallbackContext callbackContext;
     private Context appContext;
+    private Activity appActivity;
     private BeaconUtils myUtil;
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
-        appContext = this.cordova.getActivity().getApplicationContext();
-        myUtil = new BeaconUtils(appContext);
+        appActivity = this.cordova.getActivity();
+        appContext = appActivity.getApplicationContext();
+        myUtil = new BeaconUtils(appActivity);
     }
 
     @Override
