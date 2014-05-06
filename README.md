@@ -11,12 +11,16 @@ Phonegap/Cordova plugin wrapper for Android SDK (https://github.com/RadiusNetwor
 Usage
 ==
 ```
-  iBeaconGap.getBeacons(gotBeacons, failedGettingBeacons);
+  document.addEventListener("deviceready", startBeaconScans, false);
+  
+  function startBeaconScans() {
+    iBeaconGap.getBeacons(gotBeacons, failedGettingBeacons);
+  }
   
   function gotBeacons(beacons) {
     for(var i=0; i<beacons.length;i++) {
       var thisBeacon = beacons[i];
-      
+      ...
     }
   }
   
