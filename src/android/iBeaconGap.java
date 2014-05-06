@@ -33,6 +33,7 @@ public class iBeaconGap extends CordovaPlugin {
         appActivity = this.cordova.getActivity();
         appContext = appActivity.getApplicationContext();
         myUtil = new BeaconUtils(appActivity);
+        
     }
 
     @Override

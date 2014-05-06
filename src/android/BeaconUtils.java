@@ -30,7 +30,7 @@ import android.os.RemoteException;
 public class BeaconUtils implements IBeaconConsumer, RangeNotifier, IBeaconDataNotifier {
 
     private Context context;
-	private IBeaconManager iBeaconManager;
+    private IBeaconManager iBeaconManager;
     protected static final String TAG = "BeaconUtils";
     
     public ArrayList<IBeacon> myBeacons = new ArrayList<IBeacon>();
@@ -38,7 +38,9 @@ public class BeaconUtils implements IBeaconConsumer, RangeNotifier, IBeaconDataN
     public BeaconUtils(Context context) {
         this.context = context;
         
-        verifyBluetooth((Activity) context);
+        this.iBeaconManager = IBeaconManager.getInstanceForApplication(((Activity)this.context).getApplicationContext());
+        this.iBeaconManager.bind(this);
+//        verifyBluetooth((Activity) context);
     }
 
 //    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -93,7 +95,7 @@ public class BeaconUtils implements IBeaconConsumer, RangeNotifier, IBeaconDataN
             @Override
             public void didEnterRegion(Region region) {
                 //createNotification();
-                //Log.i(TAG, "I am in the range of an IBEACON: "+region.getProximityUuid());
+                Log.i(TAG, "I am in the range of an IBEACON: "+region.getProximityUuid());
                 //SyncServiceHelper.getInst().trySyncOffers(region.getProximityUuid());
             }
 
@@ -119,13 +121,15 @@ public class BeaconUtils implements IBeaconConsumer, RangeNotifier, IBeaconDataN
 
     @Override
     public void unbindService(ServiceConnection serviceConnection) {
-        this.iBeaconManager.unBind(this);
+        this.context.unbindService(serviceConnection);
+//        this.iBeaconManager.unBind(this);
     }
 
     @Override
     public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i) {
-        this.iBeaconManager.bind(this);
-        return true;
+//        this.iBeaconManager.bind(this);
+        return this.context.bindService(intent, serviceConnection, i);
+//        return true;
     }
 
     @Override
