@@ -369,12 +369,22 @@
 
 #pragma mark iBeaconGap
 
+- (void)startRangingBeaconsInRegion:(CDVInvokedUrlCommand*)command {
+    CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:myUUID identifier:myCompanyIdentifier];
+    [self.locationManager startRangingBeaconsInRegion:region];
+}
+
+- (void)stopRangingBeaconsInRegion:(CDVInvokedUrlCommand*)command {
+    CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:myUUID identifier:myCompanyIdentifier];
+    [self.locationManager stopRangingBeaconsInRegion:region];
+}
+
 - (void)startScanning:(CDVInvokedUrlCommand*)command {
-    [self startMonitoringForRegion:command];
+    [self startRangingBeaconsInRegion:command];
 }
 
 - (void)stopScanning:(CDVInvokedUrlCommand*)command {
-    [self stopMonitoringForRegion:command];
+    [self stopRangingBeaconsInRegion:command];
 }
 
 - (void)getBeacons:(CDVInvokedUrlCommand*)command {

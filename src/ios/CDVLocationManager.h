@@ -29,6 +29,7 @@ const int CDV_LOCATION_MANAGER_INPUT_PARSE_ERROR = 100;
 
 }
 
+@property (retain) NSArray* beacons;
 
 @property (retain) CLLocationManager *locationManager;
 
@@ -43,6 +44,10 @@ const int CDV_LOCATION_MANAGER_INPUT_PARSE_ERROR = 100;
 - (void)startMonitoringForRegion:(CDVInvokedUrlCommand*)command;
 - (void)stopMonitoringForRegion:(CDVInvokedUrlCommand*)command;
 
+- (void)startRangingBeaconsInRegion:(CDVInvokedUrlCommand*)command;
+- (void)stopRangingBeaconsInRegion:(CDVInvokedUrlCommand*)command;
+
+- (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray *)beacons inRegion:(CLBeaconRegion *)region;
 
 - (void)isRangingAvailable:(CDVInvokedUrlCommand*)command;
 - (void)getAuthorizationStatus:(CDVInvokedUrlCommand*)command;
