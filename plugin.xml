@@ -36,4 +36,13 @@
             <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
         </config-file>
 	</platform>
+	<platform name="ios">
+        <config-file parent="/*" target="config.xml">
+            <feature name="iBeaconGap">
+                <param name="ios-package" value="CDVLocationManager"/>
+            </feature>
+        </config-file>
+        <header-file src="src/ios/CDVLocationManager.h"/>
+        <source-file src="src/ios/CDVLocationManager.m"/>
+    </platform>
 </plugin>
