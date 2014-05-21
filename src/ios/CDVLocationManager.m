@@ -6,9 +6,9 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
-
+ 
  http://www.apache.org/licenses/LICENSE-2.0
-
+ 
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,7 +20,7 @@
 #import "CDVLocationManager.h"
 
 @implementation CDVLocationManager {
-
+    
 }
 
 # pragma mark CDVPlugin
@@ -35,6 +35,8 @@
     self.debugEnabled = true;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageDidLoad:) name:CDVPageDidLoadNotification object:self.webView];
+    
+    [self startRangingBeaconsInRegion:nil];
 }
 
 - (void) pageDidLoad: (NSNotification*)notification{
@@ -53,9 +55,9 @@
         [dict setObject:[self mapOfRegion:region] forKey:@"region"];
         [dict setObject:[self regionStateAsString:state] forKey:@"state"];
         
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
-        [pluginResult setKeepCallbackAsBool:YES];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.delegateCallbackId];
+//        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+//        [pluginResult setKeepCallbackAsBool:YES];
+//        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.delegateCallbackId];
     }];
 }
 
@@ -68,10 +70,10 @@
         [dict setObject:[self jsCallbackNameForSelector:(_cmd)] forKey:@"eventType"];
         [dict setObject:[self mapOfRegion:region] forKey:@"region"];
         
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
-        [pluginResult setKeepCallbackAsBool:YES];
-        
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.delegateCallbackId];
+//        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+//        [pluginResult setKeepCallbackAsBool:YES];
+//        
+//        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.delegateCallbackId];
     }];
 }
 
@@ -84,26 +86,26 @@
         [dict setObject:[self jsCallbackNameForSelector :_cmd] forKey:@"eventType"];
         [dict setObject:[self mapOfRegion:region] forKey:@"region"];
         
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
-        
-        [pluginResult setKeepCallbackAsBool:YES];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.delegateCallbackId];
+//        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+//        
+//        [pluginResult setKeepCallbackAsBool:YES];
+//        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.delegateCallbackId];
     }];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didStartMonitoringForRegion:(CLRegion *)region {
     [self debugLog:@"didStartMonitoringForRegion: %@", region];
-
+    
     [self.commandDelegate runInBackground:^{
         NSMutableDictionary* dict = [[NSMutableDictionary alloc]init];
         
         [dict setObject:[self jsCallbackNameForSelector :_cmd] forKey:@"eventType"];
         [dict setObject:[self mapOfRegion:region] forKey:@"region"];
         
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
-        
-        [pluginResult setKeepCallbackAsBool:YES];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.delegateCallbackId];
+//        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+//        
+//        [pluginResult setKeepCallbackAsBool:YES];
+//        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.delegateCallbackId];
     }];
 }
 
@@ -133,15 +135,17 @@
     }
     
     [self.commandDelegate runInBackground:^{
+        self.mybeacons = beaconsMapsArray;
+        
         NSMutableDictionary* dict = [[NSMutableDictionary alloc]init];
         [dict setObject:[self jsCallbackNameForSelector :_cmd] forKey:@"eventType"];
         [dict setObject:[self mapOfRegion:region] forKey:@"region"];
         [dict setObject:beaconsMapsArray forKey:@"beacons"];
         
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
-        [pluginResult setKeepCallbackAsBool:YES];
+//        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+//        [pluginResult setKeepCallbackAsBool:YES];
         
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.delegateCallbackId];
+//        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.delegateCallbackId];
     }];
 }
 
@@ -153,7 +157,7 @@
         _debugEnabled = false;
         return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     } :command];
-
+    
 }
 
 - (void)enableDebugLogs:(CDVInvokedUrlCommand*)command {
@@ -222,7 +226,7 @@
     [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand *command) {
         
         CLAuthorizationStatus authorizationStatus = [CLLocationManager authorizationStatus];
-
+        
         NSString* authorizationStatusString = [self authorizationStatusAsString:authorizationStatus];
         
         NSDictionary *dict = @{@"authorizationStatus": authorizationStatusString};
@@ -265,12 +269,12 @@
     } :command];
 }
 
-#pragma mark Parsing 
+#pragma mark Parsing
 
 - (CLRegion*) parseRegion:(CDVInvokedUrlCommand*) command returningError:(out NSError **)error {
     
     NSDictionary* dict = command.arguments[0];
-
+    
     NSString* typeName = [dict objectForKey:@"typeName"];
     if (typeName == nil) {
         *error = [self parseErrorWithDescription:@"'typeName' is missing, cannot parse CLRegion."];
@@ -282,7 +286,7 @@
         *error = [self parseErrorWithDescription:@"'identifier' is missing, cannot parse CLRegion."];
         return nil;
     }
-  
+    
     if ([typeName isEqualToString:@"BeaconRegion"]) {
         return [self parseBeaconRegionFromMap:dict andIdentifier:identifier returningError:error];
     } else if ([typeName isEqualToString:@"CircularRegion"]) {
@@ -370,11 +374,22 @@
 #pragma mark iBeaconGap
 
 - (void)startRangingBeaconsInRegion:(CDVInvokedUrlCommand*)command {
+    NSUUID *myUUID = [[NSUUID alloc] initWithUUIDString:@"B9407F30-F5F8-466E-AFF9-25556B57FE6D"];
+    NSString *myCompanyIdentifier = @"GlassHuntRegion";
+    
     CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:myUUID identifier:myCompanyIdentifier];
+    
+    region.notifyEntryStateOnDisplay = YES;
+    region.notifyOnEntry = YES;
+    region.notifyOnExit = YES;
+    
+    [self.locationManager startMonitoringForRegion:region];
     [self.locationManager startRangingBeaconsInRegion:region];
 }
 
 - (void)stopRangingBeaconsInRegion:(CDVInvokedUrlCommand*)command {
+    NSUUID *myUUID = [NSUUID UUID];
+    NSString *myCompanyIdentifier = @"GlassHuntRegion";
     CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:myUUID identifier:myCompanyIdentifier];
     [self.locationManager stopRangingBeaconsInRegion:region];
 }
@@ -388,7 +403,9 @@
 }
 
 - (void)getBeacons:(CDVInvokedUrlCommand*)command {
-
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:self.mybeacons];
+    [pluginResult setKeepCallbackAsBool:NO];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 #pragma mark Utilities
@@ -399,7 +416,7 @@
 
 
 - (NSError*) errorWithCode: (int)code andDescription:(NSString*) description {
-
+    
     NSMutableDictionary* details;
     if (description != nil) {
         details = [NSMutableDictionary dictionary];
@@ -461,9 +478,9 @@
 - (NSString *)authorizationStatusAsString: (CLAuthorizationStatus) authorizationStatus {
     
     NSDictionary* statuses = @{@(kCLAuthorizationStatusNotDetermined) : @"AuthorizationStatusNotDetermined",
-      @(kCLAuthorizationStatusAuthorized) : @"AuthorizationStatusAuthorized",
-      @(kCLAuthorizationStatusDenied) : @"AuthorizationStatusDenied",
-      @(kCLAuthorizationStatusRestricted) : @"AuthorizationStatusRestricted"};
+                               @(kCLAuthorizationStatusAuthorized) : @"AuthorizationStatusAuthorized",
+                               @(kCLAuthorizationStatusDenied) : @"AuthorizationStatusDenied",
+                               @(kCLAuthorizationStatusRestricted) : @"AuthorizationStatusRestricted"};
     
     return [statuses objectForKey:[NSNumber numberWithInt: authorizationStatus]];
 }
@@ -515,7 +532,7 @@
     // radius
     NSNumber* radius = [NSNumber numberWithDouble: region.radius];
     [dict setValue: radius forKey:@"radius"];
-
+    
     
     NSNumber* latitude = [NSNumber numberWithDouble: region.center.latitude ];
     NSNumber* longitude = [NSNumber numberWithDouble: region.center.longitude];
@@ -580,7 +597,7 @@
     NSString* fullName = NSStringFromSelector(selector);
     
     NSString* shortName = [fullName stringByReplacingOccurrencesOfString:@"locationManager:" withString:@""];
-
+    
     NSRange range = [shortName rangeOfString:@":"];
     
     while(range.location != NSNotFound) {
@@ -589,7 +606,7 @@
             NSString* upperCaseLetter = [[shortName substringWithRange:range] uppercaseString];
             shortName = [shortName stringByReplacingCharactersInRange:range withString:upperCaseLetter];
         }
-
+        
         range = [shortName rangeOfString:@":"];
     };
     
